@@ -1,6 +1,6 @@
-import MinmaxWorker from './minmax.worker';
+// 使用标准 Web Worker API，兼容 Webpack 5
+const worker = new Worker(new URL('./minmax.worker.js', import.meta.url));
 
-const worker = new MinmaxWorker();
 export const start = async (board_size, aiFirst, depth) => {
   return new Promise((resolve, reject) => {
     worker.postMessage({
