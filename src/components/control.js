@@ -35,6 +35,18 @@ function Control() {
         // 扣除积分成功，开始游戏
         dispatch(startGame({board_size, aiFirst, depth}));
         setPointsModalVisible(false);
+
+        // 通知父页面更新积分显示
+        if (window.parent !== window) {
+          // 发送完整的积分数据
+          window.parent.postMessage({
+            type: 'POINTS_UPDATED',
+            remainingPoints: data.remaining_points,
+            total_spent: data.total_spent,  // 添加累计消费
+            points_per_game: data.points_per_game  // 添加每局消耗
+          }, '*');
+        }
+
         // 可选：显示成功消息
         // Modal.success({ content: data.message });
       } else {
