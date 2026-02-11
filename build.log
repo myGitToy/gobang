@@ -1,0 +1,14 @@
+
+> gobang-v3@3.0.0-beta.1 build
+> react-scripts build
+
+(node:2672) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Creating an optimized production build...
+Failed to compile.
+
+[eslint] 
+src\components\control.js
+Syntax error: Unterminated JSX contents. (125:12) (125:12)
+
+
