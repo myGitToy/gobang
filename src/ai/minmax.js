@@ -102,7 +102,8 @@ export const vcf = factory(false, true);
 
 export const minmax = (board, role, depth = 4, enableVCT = true) => {
   if (enableVCT) {
-    const vctDepth = depth + 8;
+    // 杀棋深度：初级(depth=2)为5层，其他难度按比例增加
+    const vctDepth = depth === 2 ? 5 : depth + 8;
     // 先看自己有没有杀棋
     let [value, move, bestPath] = vct(board, role, vctDepth);
     if (value >= FIVE) {

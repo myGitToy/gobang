@@ -50,10 +50,10 @@ function Control() {
               onChange={onDepthChange}
               disabled={loading}
               options={[
-                { value: '2', label: '弱智(2~10层)超快' },
-                { value: '4', label: '简单(4~12层)快' },
-                { value: '6', label: '普通(6~14层)慢' },
-                { value: '8', label: '困难(8~16层)超慢' },
+                { value: '2', label: '初级(普通2步，杀棋5步)超快' },
+                { value: '4', label: '中级(普通4步，杀棋12步)快' },
+                { value: '6', label: '高级(普通6步，杀棋14步)慢' },
+                { value: '8', label: '竞赛级(普通8步，杀棋16步)超慢' },
               ]}
             />
           </div>

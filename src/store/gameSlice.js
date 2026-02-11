@@ -126,7 +126,8 @@ export const gameSlice = createSlice({
         state.sessionId = initialState.sessionId;
         state.size = initialState.size;
         state.loading = initialState.loading;
-        state.depth = initialState.depth;
+        // 保留用户选择的难度设置，不重置
+        // state.depth = initialState.depth;
         state.score = initialState.score;
         state.path = initialState.path;
         state.currentDepth = initialState.currentDepth;
