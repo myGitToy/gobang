@@ -19,3 +19,10 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+
+# React 构建产物
+/build
+/coverage
+
+# 测试相关
+*.test.js.snap
