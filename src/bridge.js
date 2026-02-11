@@ -1,68 +1,82 @@
-// 使用标准 Web Worker API，兼容 Webpack 5
-const worker = new Worker(new URL('./minmax.worker.js', import.meta.url));
+// 【临时修复】不使用 Web Worker，直接在主线程中运行 AI
+// 原因：Webpack 5 的 Worker 配置存在问题，导致 Worker 无法正确加载
+// TODO: 后续需要修复 Webpack 配置以正确支持 Web Worker
 
-export const start = async (board_size, aiFirst, depth) => {
-  return new Promise((resolve, reject) => {
-    worker.postMessage({
-      action: 'start',
-      payload: {
-        board_size,
-        aiFirst,
-        depth,
-      },
-    });
-    worker.onmessage = (event) => {
-      const { action, payload } = event.data;
-      if (action === 'start') {
-        resolve(payload);
+import Board from './ai/board';
+import { minmax } from './ai/minmax';
+import { board_size } from './config';
+
+let board = new Board(board_size);
+let score = 0, bestPath = [], currentDepth = 0;
+
+const getBoardData = () => {
+  return {
+    board: JSON.parse(JSON.stringify(board.board)),
+    winner: board.getWinner(),
+    current_player: board.role,
+    history: JSON.parse(JSON.stringify(board.history)),
+    size: board.size,
+    score,
+    bestPath,
+    currentDepth,
+  };
+};
+
+// 使用 setTimeout 让 AI 计算不阻塞 UI
+const runAsync = (fn) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const result = fn();
+      resolve(result);
+    }, 10);
+  });
+};
+
+export const start = async (board_size_param, aiFirst, depth) => {
+  return runAsync(() => {
+    console.log('start', board_size_param, aiFirst, depth);
+    board = new Board(board_size_param);
+    try {
+      if (aiFirst) {
+        const res = minmax(board, board.role, depth);
+        let move;
+        [score, move, bestPath, currentDepth] = res;
+        board.put(move[0], move[1]);
       }
-    };
-  })
+    } catch (e) {
+      console.error(e);
+    }
+    return getBoardData();
+  });
 };
 
 export const move = async (position, depth) => {
-  return new Promise((resolve, reject) => {
-    worker.postMessage({
-      action: 'move',
-      payload: {
-        position,
-        depth,
-      },
-    });
-    worker.onmessage = (event) => {
-      const { action, payload } = event.data;
-      if (action === 'move') {
-        resolve(payload);
-      }
-    };
-  })
+  return runAsync(() => {
+    try {
+      board.put(position[0], position[1]);
+    } catch (e) {
+      console.error(e);
+    }
+    if (!board.isGameOver()) {
+      const res = minmax(board, board.role, depth);
+      let move;
+      [score, move, bestPath, currentDepth] = res;
+      board.put(move[0], move[1]);
+    }
+    return getBoardData();
+  });
 };
 
 export const end = async () => {
-  return new Promise((resolve, reject) => {
-    worker.postMessage({
-      action: 'end',
-    });
-    worker.onmessage = (event) => {
-      const { action, payload } = event.data;
-      if (action === 'end') {
-        resolve(payload);
-      }
-    };
-  })
+  return runAsync(() => {
+    return getBoardData();
+  });
 };
 
 export const undo = async () => {
-  return new Promise((resolve, reject) => {
-    worker.postMessage({
-      action: 'undo',
-    });
-    worker.onmessage = (event) => {
-      console.log('undo', event);
-      const { action, payload } = event.data;
-      if (action === 'undo') {
-        resolve(payload);
-      }
-    };
-  })
+  return runAsync(() => {
+    board.undo();
+    board.undo();
+    return getBoardData();
+  });
 };
