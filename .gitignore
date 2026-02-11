@@ -1,3 +1,11 @@
+# Gobang subproject ignore
+node_modules/
+dist/
+build/
+*.map
+*.js.map
+*.LICENSE.txt
+.env
 .DS_Store
 node_modules
 /dist
